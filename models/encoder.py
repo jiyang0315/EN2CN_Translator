@@ -1,9 +1,9 @@
 from torch import nn
 import torch
 from models.encoder_block import EncoderBlock
-from embeddings import Embedding
-from encoder_block import EncoderBlock
-
+from models.embeddings import Embedding
+from models.encoder_block import EncoderBlock
+from configs.config import *
 
 class Encoder(nn.Module):
     def __init__(self, vocab_size, q_k_size, v_size, embedding_dim, num_head, fn, num_encoder_block):
@@ -17,7 +17,7 @@ class Encoder(nn.Module):
         )
         
     def forward(self, x):
-        pad_mask = (x == PAD_IDX).unsqueeze(1).expand(x.size(0), x.size(1), x.size(1) )  # (batch, seq_len, seq_len)
+        pad_mask = (x == pad_id).unsqueeze(1).expand(x.size(0), x.size(1), x.size(1) )  # (batch, seq_len, seq_len)
         output = self.emb(x)  # (batch, seq_len) -> (batch, seq_len, embedding_dim)
         
         for block in self.encoder_blocks:

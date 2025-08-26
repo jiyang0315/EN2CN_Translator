@@ -21,9 +21,6 @@ class DecoderBlock(nn.Module):
     def forward(self,x, encode_z, first_attn_mask, second_attn_mask): # x (batch, seq_len, embedding_dim)  pad_mask= 
          attention_1 = self.attention_1(x, x,first_attn_mask)
          attention_1 = self.layer_norm1(x + attention_1)
-         print('attention_1',attention_1.size())
-         print('encode_z',encode_z.size())
-         print('second_attn_mask',second_attn_mask.size())
          
          attention_2 = self.attention_2(attention_1, encode_z, second_attn_mask)
          attention_2 = self.layer_norm2(attention_2 + attention_1)

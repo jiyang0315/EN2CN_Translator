@@ -1,14 +1,14 @@
 from torch import nn
 import torch
-from decoder import Decoder
-from encoder import Encoder
+from models.decoder import Decoder
+from models.encoder import Encoder
 
 
 class Transformer(nn.Module):
-    def __init__(self,enc_vocab_size,dec_vocab_size,emb_size,q_k_size,v_size,f_size,head,nblocks,dropout=0.1,seq_max_len=5000):
+    def __init__(self,enc_vocab_size,dec_vocab_size,q_k_size,v_size,emb_size,head,f_size,nblocks):
         super().__init__()
-        self.encoder=Encoder(enc_vocab_size,emb_size,q_k_size,v_size,f_size,head,nblocks,dropout,seq_max_len)
-        self.decoder=Decoder(dec_vocab_size,emb_size,q_k_size,v_size,f_size,head,nblocks,dropout,seq_max_len)
+        self.encoder=Encoder(enc_vocab_size,q_k_size,v_size,emb_size,head,f_size,nblocks)
+        self.decoder=Decoder(dec_vocab_size,q_k_size,v_size,emb_size,head,f_size,nblocks)
 
     def forward(self,encoder_x,decoder_x):
         encoder_z=self.encode(encoder_x)

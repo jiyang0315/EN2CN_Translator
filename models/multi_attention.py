@@ -34,7 +34,8 @@ class MultiHeadAttention(nn.Module):
         
         v = self.w_v(x_k_v).unsqueeze(2).view(x_k_v.size()[0], x_k_v.size()[1], self.num_head, self.v_size).permute(0,2,1,3)
         
-        attention = torch.matmul(attention, v).transpose(1,2).reshape(x_k_v.size(0),x_k_v.size(1), self.num_head*self.v_size)
+        z = torch.matmul(attention, v).transpose(1,2)
+        attention = z.reshape(z.size(0),z.size(1), -1)
         
         # 将输出的size 调整为与输入相同
         attention = self.linear(attention)

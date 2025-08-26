@@ -1,35 +1,43 @@
 from torch.utils.data import Dataset
 from transformers import BertTokenizer
-from configs.config import MAX_SEQ_LEN
+from configs.config import *
+
 
 class EN2CNDataset(Dataset):
-    # def __init__(self, en_tokenizer, cn_tokenizer):
-    def __init__(self):
+    def __init__(self, en_tokenizer, cn_tokenizer):
         super().__init__()
         self.en_list = []
         self.cn_list = []
+        self.en_tokenizer = en_tokenizer
+        self.cn_tokenizer = cn_tokenizer
         with open('data/train_data/train.en', 'r', encoding='utf-8') as fen, open('data/train_data/train.zh', 'r', encoding='utf-8') as fcn:
             for en in fen:
-                self.en_list.append(en.strip())
+                self.en_list.append(BOS  + en.strip() + EOS)
             for cn in fcn:
-                self.cn_list.append(cn.strip())
+                self.cn_list.append(BOS + cn.strip() + EOS)
         assert len(self.en_list)==len(self.cn_list)
         
     def __len__(self):
         return len(self.en_list)
     
     def __getitem__(self, index):
-        return self.en_list[index], self.cn_list[index]
+        # add_special_tokens=False  防止tokenizer 自动加入开始和结尾
+        return self.en_tokenizer.encode(self.en_list[index], add_special_tokens=False), self.cn_tokenizer.encode(self.cn_list[index], add_special_tokens=False)
     
     
 if __name__=='__main__':
     en_tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
     cn_tokenizer = BertTokenizer.from_pretrained("bert-base-chinese")
-    en2cn = EN2CNDataset()
+    special_tokens_dict = {
+    'additional_special_tokens': [IM_START, IM_END, BOS, EOS, PAD]
+    }
+    en_tokenizer.add_special_tokens(special_tokens_dict)
+    cn_tokenizer.add_special_tokens(special_tokens_dict)
+    
+    en2cn = EN2CNDataset(en_tokenizer, cn_tokenizer)
     en, cn = en2cn.__getitem__(0)
-    en_id = en_tokenizer.encode(en)
-    en_id_special = en_tokenizer.encode(en)
-    cn_id = cn_tokenizer.encode(cn)
-    print(en_id_special)
-    print(en_tokenizer.convert_ids_to_tokens(en_id_special))
+    print('en',en)
+    print('cn',cn)
+
+
     
