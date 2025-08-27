@@ -4,13 +4,20 @@ from configs.config import *
 
 
 class EN2CNDataset(Dataset):
-    def __init__(self, en_tokenizer, cn_tokenizer):
+    def __init__(self, en_tokenizer, cn_tokenizer, split='train'):
         super().__init__()
         self.en_list = []
         self.cn_list = []
         self.en_tokenizer = en_tokenizer
         self.cn_tokenizer = cn_tokenizer
-        with open('data/train_data/train.en', 'r', encoding='utf-8') as fen, open('data/train_data/train.zh', 'r', encoding='utf-8') as fcn:
+        if split = 'train':
+            en_data_path = 'data/train_data/train.en'
+            cn_data_path = 'data/train_data/train.zh'
+        else:
+            en_data_path = 'data/val_data/valid.en-zh.en.sgm'
+            cn_data_path = 'data/val_data/valid.en-zh.zh.sgm'
+            
+        with open(en_data_path, 'r', encoding='utf-8') as fen, open(cn_data_path, 'r', encoding='utf-8') as fcn:
             for en in fen:
                 self.en_list.append(BOS  + en.strip() + EOS)
             for cn in fcn:
